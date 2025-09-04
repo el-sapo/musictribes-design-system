@@ -1,0 +1,19 @@
+{
+  "fonts": {
+    "sans": ["Gotham", "Inter", "system-ui", "Avenir", "Helvetica", "Arial", "sans-serif"],
+    "accent": ["Exo 2", "Inter", "system-ui", "Avenir", "Helvetica", "Arial", "sans-serif"],
+    "hand": ["NanumPenScript", "cursive"]
+  },
+  "sizes": {
+    "h1": 56,
+    "h2": 32,
+    "h3": 20,
+    "body": 14
+  },
+  "weights": {
+    "regular": 400,
+    "medium": 500,
+    "bold": 700,
+    "black": 900
+  }
+}

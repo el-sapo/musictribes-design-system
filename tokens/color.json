@@ -1,0 +1,15 @@
+{
+  "brand": {
+    "primary": "#969455",
+    "accent": "#FF6A3D"
+  },
+  "palette": {
+    "bg": "#000000",
+    "surface": "#111111",
+    "text": "#FFFFFF",
+    "muted": "#9ca3af",
+    "border": "#333333",
+    "success": "#22c55e",
+    "danger": "#ef4444"
+  }
+}
