@@ -17,7 +17,14 @@ function generateCssVariables(tokens) {
   // Process color tokens
   if (tokens.color) {
     Object.entries(tokens.color).forEach(([key, value]) => {
-      css += `  --ds-color-${key}: ${value};\n`;
+      if (typeof value === 'object' && value !== null) {
+        // Handle nested objects by creating variables for each nested property
+        Object.entries(value).forEach(([nestedKey, nestedValue]) => {
+          css += `  --ds-color-${key}-${nestedKey}: ${nestedValue};\n`;
+        });
+      } else {
+        css += `  --ds-color-${key}: ${value};\n`;
+      }
     });
     css += '\n';
   }
@@ -33,7 +40,14 @@ function generateCssVariables(tokens) {
   // Process spacing tokens
   if (tokens.spacing) {
     Object.entries(tokens.spacing).forEach(([key, value]) => {
-      css += `  --ds-space-${key}: ${value}px;\n`;
+      if (typeof value === 'object' && value !== null) {
+        // Handle nested objects by creating variables for each nested property
+        Object.entries(value).forEach(([nestedKey, nestedValue]) => {
+          css += `  --ds-space-${key}-${nestedKey}: ${nestedValue}px;\n`;
+        });
+      } else {
+        css += `  --ds-space-${key}: ${value}px;\n`;
+      }
     });
     css += '\n';
   }
@@ -41,7 +55,16 @@ function generateCssVariables(tokens) {
   // Process radius tokens
   if (tokens.radius) {
     Object.entries(tokens.radius).forEach(([key, value]) => {
-      css += `  --ds-radius-${key}: ${value}${typeof value === 'number' ? 'px' : ''};\n`;
+      if (typeof value === 'object' && value !== null) {
+        // Handle nested objects by creating variables for each nested property
+        Object.entries(value).forEach(([nestedKey, nestedValue]) => {
+          const unit = typeof nestedValue === 'number' ? 'px' : '';
+          css += `  --ds-radius-${key}-${nestedKey}: ${nestedValue}${unit};\n`;
+        });
+      } else {
+        const unit = typeof value === 'number' ? 'px' : '';
+        css += `  --ds-radius-${key}: ${value}${unit};\n`;
+      }
     });
     css += '\n';
   }
@@ -50,29 +73,29 @@ function generateCssVariables(tokens) {
 
   // Add shadcn-compatible variables
   css += '\n\n/* Optional: provide shadcn-friendly variable names (hex OK if Tailwind config avoids hsl()) */\n:root {\n';
-  css += '  --background: var(--ds-color-bg);\n';
-  css += '  --foreground: var(--ds-color-text);\n';
-  css += '  --card: var(--ds-color-surface);\n';
-  css += '  --card-foreground: var(--ds-color-text);\n';
-  css += '  --popover: var(--ds-color-surface);\n';
-  css += '  --popover-foreground: var(--ds-color-text);\n';
-  css += '  --primary: var(--ds-color-accent);\n';
+  css += '  --background: var(--ds-color-palette-bg);\n';
+  css += '  --foreground: var(--ds-color-palette-text);\n';
+  css += '  --card: var(--ds-color-palette-surface);\n';
+  css += '  --card-foreground: var(--ds-color-palette-text);\n';
+  css += '  --popover: var(--ds-color-palette-surface);\n';
+  css += '  --popover-foreground: var(--ds-color-palette-text);\n';
+  css += '  --primary: var(--ds-color-brand-primary);\n';
   css += '  --primary-foreground: #000000;\n';
-  css += '  --secondary: var(--ds-color-brand);\n';
+  css += '  --secondary: var(--ds-color-brand-accent);\n';
   css += '  --secondary-foreground: #000000;\n';
-  css += '  --muted: var(--ds-color-muted);\n';
-  css += '  --muted-foreground: var(--ds-color-text);\n';
-  css += '  --accent: var(--ds-color-accent);\n';
+  css += '  --muted: var(--ds-color-palette-muted);\n';
+  css += '  --muted-foreground: var(--ds-color-palette-text);\n';
+  css += '  --accent: var(--ds-color-brand-accent);\n';
   css += '  --accent-foreground: #000000;\n';
-  css += '  --destructive: var(--ds-color-danger);\n';
+  css += '  --destructive: var(--ds-color-palette-danger);\n';
   css += '  --destructive-foreground: #ffffff;\n';
-  css += '  --border: var(--ds-color-border);\n';
-  css += '  --input: var(--ds-color-border);\n';
-  css += '  --ring: var(--ds-color-accent);\n';
+  css += '  --border: var(--ds-color-palette-border);\n';
+  css += '  --input: var(--ds-color-palette-border);\n';
+  css += '  --ring: var(--ds-color-brand-accent);\n';
   css += '}\n';
   
   // Add base app styles hook (optional)
-  css += '\n/* Base app styles hook (optional) */\nbody { background: var(--ds-color-bg); color: var(--ds-color-text); }\n';
+  css += '\n/* Base app styles hook (optional) */\nbody { background: var(--ds-color-palette-bg); color: var(--ds-color-palette-text); }\n';
   
   return css;
 }
@@ -84,7 +107,12 @@ function generateTsVariables(tokens) {
   ts += 'export const colors = {\n';
   if (tokens.color) {
     Object.entries(tokens.color).forEach(([key, value]) => {
-      ts += `  ${key}: '${value}',\n`;
+      if (typeof value === 'object' && value !== null) {
+        // Handle nested objects by creating a nested object in TS
+        ts += `  ${key}: ${JSON.stringify(value)},\n`;
+      } else {
+        ts += `  ${key}: '${value}',\n`;
+      }
     });
   }
   ts += '} as const;\n\n';
@@ -92,7 +120,11 @@ function generateTsVariables(tokens) {
   ts += 'export const spacing = {\n';
   if (tokens.spacing) {
     Object.entries(tokens.spacing).forEach(([key, value]) => {
-      ts += `  ${key}: ${value},\n`;
+      // Handle object values by stringifying them
+      const formattedValue = typeof value === 'object' && value !== null 
+        ? JSON.stringify(value) 
+        : value;
+      ts += `  ${key}: ${formattedValue},\n`;
     });
   }
   ts += '} as const;\n\n';
@@ -100,7 +132,11 @@ function generateTsVariables(tokens) {
   ts += 'export const radius = {\n';
   if (tokens.radius) {
     Object.entries(tokens.radius).forEach(([key, value]) => {
-      ts += `  ${key}: ${value},\n`;
+      // Handle object values by stringifying them
+      const formattedValue = typeof value === 'object' && value !== null 
+        ? JSON.stringify(value) 
+        : value;
+      ts += `  ${key}: ${formattedValue},\n`;
     });
   }
   ts += '} as const;\n\n';
@@ -118,7 +154,11 @@ function generateTsVariables(tokens) {
     ts += '  sizes: {\n';
     if (tokens.typography.sizes) {
       Object.entries(tokens.typography.sizes).forEach(([key, value]) => {
-        ts += `    ${key}: ${value},\n`;
+        // Handle object values by stringifying them
+        const formattedValue = typeof value === 'object' && value !== null 
+          ? JSON.stringify(value) 
+          : value;
+        ts += `    ${key}: ${formattedValue},\n`;
       });
     }
     ts += '  },\n';
@@ -126,7 +166,11 @@ function generateTsVariables(tokens) {
     ts += '  weights: {\n';
     if (tokens.typography.weights) {
       Object.entries(tokens.typography.weights).forEach(([key, value]) => {
-        ts += `    ${key}: ${value},\n`;
+        // Handle object values by stringifying them
+        const formattedValue = typeof value === 'object' && value !== null 
+          ? JSON.stringify(value) 
+          : value;
+        ts += `    ${key}: ${formattedValue},\n`;
       });
     }
     ts += '  },\n';
