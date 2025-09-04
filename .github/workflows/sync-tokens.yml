@@ -36,16 +36,13 @@ jobs:
             echo "changes=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: Commit and push changes
-        if: steps.git-check.outputs.changes == 'true'
-        run: |
-          git commit -am "chore: sync platform tokens"
-          git push
-
       - name: Create PR if needed
         if: steps.git-check.outputs.changes == 'true'
-        uses: meilisearch/create-pull-request@v2
+        uses: peter-evans/create-pull-request@v6
         with:
+          commit-message: "chore: sync platform tokens"
           title: "chore: sync platform tokens"
           body: "Automated token synchronization from design tokens"
           branch: "sync-tokens"
+          base: "main"
+          delete-branch: true
