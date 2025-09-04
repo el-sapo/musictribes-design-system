@@ -1,0 +1,11 @@
+{
+  "name": "musictribes-design-system",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": {
+    "sync": "node scripts/sync-tokens.js"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.4"
+  }
+}

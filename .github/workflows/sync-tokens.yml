@@ -1,0 +1,51 @@
+name: Sync Platform Tokens
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  sync-tokens:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run token sync script
+        run: npm run sync
+
+      - name: Check for changes
+        id: git-check
+        run: |
+          git config --local user.email "github-actions@example.com"
+          git config --local user.name "GitHub Actions"
+          git add -A
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Commit and push changes
+        if: steps.git-check.outputs.changes == 'true'
+        run: |
+          git commit -am "chore: sync platform tokens"
+          git push
+
+      - name: Create PR if needed
+        if: steps.git-check.outputs.changes == 'true'
+        uses: meilisearch/create-pull-request@v2
+        with:
+          title: "chore: sync platform tokens"
+          body: "Automated token synchronization from design tokens"
+          branch: "sync-tokens"
