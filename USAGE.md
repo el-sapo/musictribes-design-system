@@ -49,6 +49,8 @@ const styles = StyleSheet.create({
 - Keep raw SVG whenever possible; export PNGs only when necessary.
 
 ## Updating Tokens
-- Change JSON under `tokens/`
-- Reflect updates in `platforms/web/tokens.css` and `platforms/react-native/tokens.ts`
-- Commit as a single change to keep history clear
+1. Edit the JSON files in the `tokens/` directory
+2. Run `npm run sync` to automatically update platform-specific implementations
+3. Commit all changes
+
+> 💡 The GitHub Action will automatically run the sync script if you forget, and create a PR only if there are changes to the platform files. This ensures consistency across all platforms without manual intervention.
